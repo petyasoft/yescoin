@@ -12,20 +12,22 @@ import asyncio
 
 
 class Start:
-    def __init__(self, thread: int, account: str):
+    def __init__(self, thread: int, account: str, proxy : str):
         self.thread = thread
         self.client = Client(name=account, api_id=config.API_ID, api_hash=config.API_HASH, workdir=config.WORKDIR)
 
         headers = {'User-Agent': UserAgent(os='android').random}
         self.session = aiohttp.ClientSession(headers=headers, trust_env=True)
-
         self.token = None
+        if proxy:
+            self.proxy = f"http://{proxy.split(':')[2]}:{proxy.split(':')[3]}@{proxy.split(':')[0]}:{proxy.split(':')[1]}"
+        else:
+            self.proxy = None
 
     async def main(self):
         while True:
             try:
                 await asyncio.sleep(random.uniform(config.ACC_DELAY[0], config.ACC_DELAY[1]))
-
                 tg_web_data = await self.get_tg_web_data()
                 await self.login(tg_web_data=tg_web_data)
                 answer = await self.claim()
