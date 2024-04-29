@@ -14,11 +14,14 @@ async def main():
 
     if action == 1:
         accounts = await Accounts().get_accounts()
-
+        with open('proxy.txt','r') as file:
+            proxy = [i.strip() for i in file.readlines()]
         tasks = []
         for thread, account in enumerate(accounts):
-            tasks.append(asyncio.create_task(Start(account=account, thread=thread).main()))
-
+            if len(proxy) > thread:
+                tasks.append(asyncio.create_task(Start(account=account, thread=thread, proxy=proxy[thread]).main()))
+            else:
+                tasks.append(asyncio.create_task(Start(account=account, thread=thread,proxy = None).main()))
         await asyncio.gather(*tasks)
 
 
