@@ -34,6 +34,24 @@ class Start:
                 if answer == True:
                     while answer:
                         answer = await self.claim()
+                
+                if config.AUTO_UPGRATE == True:
+                    info = await self.get_info()
+                    while True:
+                        if info["Coin"] < config.MULIVALUE:
+                            answer = await self.upgrate(name = 1)
+                            if answer != 0 :
+                                break
+                    while True:
+                        if info["PoolRecovery"] < config.COINLIMIT:
+                            answer = await self.upgrate(name = 3)
+                            if answer != 0 :
+                                break
+                    while True:
+                        if info ["PoolTotal"] < config.FILLRATE:
+                            answer = await self.upgrate(name = 2)
+                            if answer != 0:
+                                break
                 sleep_time = random.randint(60*10,60*20)
                 logger.info(f"Поток {self.thread} | уснул на {sleep_time} сек")
                 await asyncio.sleep(random.randint(60*10,60*20))
@@ -73,3 +91,23 @@ class Start:
             return True
         else:
             return False
+    
+    async def get_info(self):
+        try:
+            response = await self.session.get("https://api.yescoin.gold/build/getAccountBuildInfo")
+            data = (await response.json())['data']
+            info = {
+                "Coin" : data['singleCoinLevel']+1,
+                "PoolRecovery" : data['coinPoolRecoveryLevel']+1,
+                "PoolTotal" : data['coinPoolTotalLevel']+1,
+            }
+            
+            return info
+        except:
+            return False
+    
+    async def upgrate(self, name):
+        response = await self.session.post('https://api.yescoin.gold/build/levelUp', json=name)
+        await asyncio.sleep(random.randint(2,6))
+        return ((await response.json())['code'])
+        
