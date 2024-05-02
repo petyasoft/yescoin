@@ -42,16 +42,22 @@ class Start:
                             answer = await self.upgrate(name = 1)
                             if answer != 0 :
                                 break
+                        else:
+                            break
                     while True:
                         if info["PoolRecovery"] < config.COINLIMIT:
                             answer = await self.upgrate(name = 3)
                             if answer != 0 :
                                 break
+                        else:
+                            break
                     while True:
                         if info ["PoolTotal"] < config.FILLRATE:
                             answer = await self.upgrate(name = 2)
                             if answer != 0:
                                 break
+                        else:
+                            break
                 sleep_time = random.randint(60*10,60*20)
                 logger.info(f"Поток {self.thread} | уснул на {sleep_time} сек")
                 await asyncio.sleep(random.randint(60*10,60*20))
