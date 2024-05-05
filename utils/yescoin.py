@@ -60,7 +60,7 @@ class Start:
                             break
                 sleep_time = random.randint(60*10,60*20)
                 logger.info(f"Поток {self.thread} | уснул на {sleep_time} сек")
-                await asyncio.sleep(random.randint(60*10,60*20))
+                await asyncio.sleep(sleep_time)
             except Exception as e:
                 logger.error(f"Поток {self.thread} | Ошибка: {e}")
 
