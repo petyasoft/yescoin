@@ -8,6 +8,9 @@ ACC_DELAY = [1, 15]
 # папка с сессиями (не менять)
 WORKDIR = "sessions/"
 
+# использование прокси
+USE_PROXY = True # True/False
+
 # автоулучшение True = включено, False = выключено
 AUTO_UPGRATE = True
 
