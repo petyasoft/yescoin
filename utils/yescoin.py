@@ -15,7 +15,6 @@ class Start:
     def __init__(self, thread: int, account: str, proxy : str):
         self.thread = thread
         self.client = Client(name=account, api_id=config.API_ID, api_hash=config.API_HASH, workdir=config.WORKDIR)
-
         headers = {'User-Agent': UserAgent(os='android').random}
         self.session = aiohttp.ClientSession(headers=headers, trust_env=True)
         self.token = None
@@ -83,14 +82,14 @@ class Start:
 
     async def login(self, tg_web_data):
         json_data = {"code": tg_web_data}
-        resp = await self.session.post("https://api.yescoin.gold/user/login", json=json_data)
+        resp = await self.session.post("https://api.yescoin.gold/user/login", json=json_data,proxy = self.proxy)
 
         resp_json = await resp.json()
         self.session.headers['token']=resp_json['data']["token"]
     
     async def claim(self):
         count = random.randint(20,85)
-        response = await self.session.post('https://api.yescoin.gold/game/collectCoin',json=count)
+        response = await self.session.post('https://api.yescoin.gold/game/collectCoin',json=count,proxy = self.proxy)
         text = await response.json()
         await asyncio.sleep(random.randint(3,6))
         if text['code'] == 0:
@@ -100,7 +99,7 @@ class Start:
     
     async def get_info(self):
         try:
-            response = await self.session.get("https://api.yescoin.gold/build/getAccountBuildInfo")
+            response = await self.session.get("https://api.yescoin.gold/build/getAccountBuildInfo",proxy = self.proxy)
             data = (await response.json())['data']
             info = {
                 "Coin" : data['singleCoinLevel']+1,
@@ -113,7 +112,7 @@ class Start:
             return False
     
     async def upgrate(self, name):
-        response = await self.session.post('https://api.yescoin.gold/build/levelUp', json=name)
+        response = await self.session.post('https://api.yescoin.gold/build/levelUp', json=name,proxy = self.proxy)
         await asyncio.sleep(random.randint(2,6))
         return ((await response.json())['code'])
-        
+    
