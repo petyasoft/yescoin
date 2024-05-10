@@ -14,7 +14,17 @@ import asyncio
 class Start:
     def __init__(self, thread: int, account: str, proxy : str):
         self.thread = thread
-        self.client = Client(name=account, api_id=config.API_ID, api_hash=config.API_HASH, workdir=config.WORKDIR)
+        if proxy:
+            proxy_client = {
+                "scheme": "socks5",
+                "hostname": proxy.split(':')[0],
+                "port": int(proxy.split(':')[1]),
+                "username": proxy.split(':')[2],
+                "password": proxy.split(':')[3],
+            }
+            self.client = Client(name=account, api_id=config.API_ID, api_hash=config.API_HASH, workdir=config.WORKDIR, proxy=proxy_client)
+        else:
+            self.client = Client(name=account, api_id=config.API_ID, api_hash=config.API_HASH, workdir=config.WORKDIR)
         headers = {'User-Agent': UserAgent(os='android').random}
         self.session = aiohttp.ClientSession(headers=headers, trust_env=True)
         self.token = None
@@ -115,4 +125,3 @@ class Start:
         response = await self.session.post('https://api.yescoin.gold/build/levelUp', json=name,proxy = self.proxy)
         await asyncio.sleep(random.randint(2,6))
         return ((await response.json())['code'])
-    
