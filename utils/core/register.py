@@ -10,7 +10,7 @@ async def create_sessions():
         if not session_name:
             return
         
-        directory = f'{os.path.dirname(__file__)}/sessions/'
+        directory = config.SESSIONS_PATH
         len_sessions = len(os.listdir(directory))
         
         with open('proxy.txt','r') as file:
