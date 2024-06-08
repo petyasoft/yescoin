@@ -8,6 +8,9 @@ ACC_DELAY = [1, 15]
 # тип прокси
 PROXY_TYPE = "socks5" # http/socks5
 
+#полный путь к папке sessions
+SESSIONS_PATH = "YOUR_PATH"
+
 # папка с сессиями (не менять)
 WORKDIR = "sessions/"
 
