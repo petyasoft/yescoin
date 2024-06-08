@@ -22,7 +22,7 @@ async def create_sessions():
                 proxy = proxy[len_sessions]
                 
                 proxy_client = {
-                    "scheme": "socks5",
+                    "scheme": config.PROXY_TYPE,
                     "hostname": proxy.split(':')[0],
                     "port": int(proxy.split(':')[1]),
                     "username": proxy.split(':')[2],
