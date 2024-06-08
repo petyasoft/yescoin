@@ -16,7 +16,7 @@ class Start:
         self.thread = thread
         if proxy:
             proxy_client = {
-                "scheme": "socks5",
+                "scheme": config.PROXY_TYPE,
                 "hostname": proxy.split(':')[0],
                 "port": int(proxy.split(':')[1]),
                 "username": proxy.split(':')[2],
@@ -29,7 +29,7 @@ class Start:
         self.session = aiohttp.ClientSession(headers=headers, trust_env=True)
         self.token = None
         if proxy:
-            self.proxy = f"http://{proxy.split(':')[2]}:{proxy.split(':')[3]}@{proxy.split(':')[0]}:{proxy.split(':')[1]}"
+            self.proxy = f"{config.PROXY_TYPE}://{proxy.split(':')[2]}:{proxy.split(':')[3]}@{proxy.split(':')[0]}:{proxy.split(':')[1]}"
         else:
             self.proxy = None
 
