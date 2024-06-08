@@ -5,6 +5,9 @@ API_HASH = 'API_HASH'
 # задержка между подключениями к аккаунтам
 ACC_DELAY = [1, 15]
 
+# тип прокси
+PROXY_TYPE = "socks5" # http/socks5
+
 # папка с сессиями (не менять)
 WORKDIR = "sessions/"
 
