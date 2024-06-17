@@ -1,4 +1,7 @@
 from pyrogram.raw.functions.messages import RequestWebView
+from pyrogram.raw.functions.messages import RequestAppWebView
+from pyrogram.raw.types import InputBotAppShortName
+
 from urllib.parse import unquote
 from utils.core import logger
 
@@ -11,9 +14,10 @@ import aiohttp
 import asyncio
 
 
-class Start:
+class Yescoin:
     def __init__(self, thread: int, account: str, proxy : str):
         self.thread = thread
+        self.name = account
         if proxy:
             proxy_client = {
                 "scheme": config.PROXY_TYPE,
@@ -36,14 +40,14 @@ class Start:
     async def main(self):
         while True:
             try:
-                await asyncio.sleep(random.uniform(config.ACC_DELAY[0], config.ACC_DELAY[1]))
+                await asyncio.sleep(random.randint(*config.ACC_DELAY))
+                logger.info(f"main | Thread {self.thread} | {self.name} | Start! | PROXY : {self.proxy}")
                 tg_web_data = await self.get_tg_web_data()
                 await self.login(tg_web_data=tg_web_data)
                 answer = await self.claim()
                 if answer == True:
                     while answer:
                         answer = await self.claim()
-                
                 if config.AUTO_UPGRATE == True:
                     info = await self.get_info()
                     while True:
@@ -75,17 +79,18 @@ class Start:
 
     async def get_tg_web_data(self):
         await self.client.connect()
+        
+        bot = await self.client.resolve_peer('theYescoin_bot')
+        app = InputBotAppShortName(bot_id=bot, short_name="Yescoin")
 
-        await self.client.send_message(chat_id="theYescoin_bot", text="/start")
-        await asyncio.sleep(random.randint(5,10))
 
-        web_view = await self.client.invoke(RequestWebView(
-            peer=await self.client.resolve_peer('theYescoin_bot'),
-            bot=await self.client.resolve_peer('theYescoin_bot'),
-            platform='android',
-            from_bot_menu=False,
-            url='https://www.yescoin.gold'
-        ))
+        web_view = await self.client.invoke(RequestAppWebView(
+                peer=bot,
+                app=app,
+                platform='android',
+                write_allowed=True
+            ))
+        
         auth_url = web_view.url
         await self.client.disconnect()
         return unquote(string=unquote(string=auth_url.split('tgWebAppData=')[1].split('&tgWebAppVersion')[0]))
@@ -93,7 +98,6 @@ class Start:
     async def login(self, tg_web_data):
         json_data = {"code": tg_web_data}
         resp = await self.session.post("https://api.yescoin.gold/user/login", json=json_data,proxy = self.proxy)
-
         resp_json = await resp.json()
         self.session.headers['token']=resp_json['data']["token"]
     
