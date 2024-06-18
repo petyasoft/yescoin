@@ -1,7 +1,6 @@
 from loguru import logger
 from data import config
 import pyrogram
-import os
 from data.config import USE_PROXY
 
 async def create_sessions():
@@ -10,17 +9,14 @@ async def create_sessions():
         if not session_name:
             return
         
-        directory = config.SESSIONS_PATH
-        len_sessions = len(os.listdir(directory))
-        
-        with open('proxy.txt','r') as file:
-            proxy = [i.strip() for i in file.readlines()]
-        
         if USE_PROXY:
-            if len(proxy)>len_sessions:
-                
-                proxy = proxy[len_sessions]
-                
+            proxy_dict = {}
+            with open('proxy.txt','r') as file:
+                proxy_list = [i.strip().split() for i in file.readlines() if len(i.strip().split()) == 2]
+                for prox,name in proxy_list:
+                    proxy_dict[name] = prox
+            if session_name in proxy_dict:
+                proxy = proxy_dict[session_name]
                 proxy_client = {
                     "scheme": config.PROXY_TYPE,
                     "hostname": proxy.split(':')[0],
@@ -39,8 +35,7 @@ async def create_sessions():
                 async with session:
                     user_data = await session.get_me()
 
-                logger.success(f'Добавлена сессия +{user_data.phone_number} @{user_data.username}')
-            
+                logger.success(f'Добавлена сессия +{user_data.phone_number} @{user_data.username} PROXY {proxy.split(":")[0]}')
             else:
                 session = pyrogram.Client(
                     api_id=config.API_ID,
@@ -52,7 +47,7 @@ async def create_sessions():
                 async with session:
                     user_data = await session.get_me()
 
-                logger.success(f'Добавлена сессия +{user_data.phone_number} @{user_data.username}')
+                logger.success(f'Добавлена сессия +{user_data.phone_number} @{user_data.username} PROXY : NONE')
         else:
             session = pyrogram.Client(
                 api_id=config.API_ID,
@@ -64,4 +59,4 @@ async def create_sessions():
             async with session:
                 user_data = await session.get_me()
 
-            logger.success(f'Добавлена сессия +{user_data.phone_number} @{user_data.username}')
+            logger.success(f'Добавлена сессия +{user_data.phone_number} @{user_data.username} PROXY : NONE')
