@@ -103,7 +103,6 @@ class Yescoin:
         return unquote(string=unquote(string=auth_url.split('tgWebAppData=')[1].split('&tgWebAppVersion')[0]))
 
     async def login(self, tg_web_data):
-        print(tg_web_data)
         json_data = {"code": tg_web_data}
         resp = await self.session.post("https://api-backend.yescoin.gold/user/login", json=json_data,proxy = self.proxy)
         resp_json = await resp.json()
