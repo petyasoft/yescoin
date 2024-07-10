@@ -13,6 +13,8 @@ import aiohttp
 import asyncio
 
 
+REF_CODE = "OpjOkE"
+
 class Yescoin:
     def __init__(self, thread: int, account: str, proxy : str):
         self.thread = thread
@@ -92,22 +94,25 @@ class Yescoin:
                 peer=bot,
                 app=app,
                 platform='android',
-                write_allowed=True
+                write_allowed=True,
+                start_param=REF_CODE
             ))
-        
+
         auth_url = web_view.url
         await self.client.disconnect()
         return unquote(string=unquote(string=auth_url.split('tgWebAppData=')[1].split('&tgWebAppVersion')[0]))
 
     async def login(self, tg_web_data):
+        print(tg_web_data)
         json_data = {"code": tg_web_data}
-        resp = await self.session.post("https://api.yescoin.gold/user/login", json=json_data,proxy = self.proxy)
+        resp = await self.session.post("https://api-backend.yescoin.gold/user/login", json=json_data,proxy = self.proxy)
         resp_json = await resp.json()
         self.session.headers['token']=resp_json['data']["token"]
+        await self.session.post(f'https://api-backend.yescoin.gold/invite/claimGiftBox?packId={REF_CODE}')
     
     async def claim(self):
         count = random.randint(20,85)
-        response = await self.session.post('https://api.yescoin.gold/game/collectCoin',json=count,proxy = self.proxy)
+        response = await self.session.post('https://api-backend.yescoin.gold/game/collectCoin',json=count,proxy = self.proxy)
         text = await response.json()
         await asyncio.sleep(random.randint(3,6))
         if text['code'] == 0:
@@ -118,7 +123,7 @@ class Yescoin:
     
     async def get_info(self):
         try:
-            response = await self.session.get("https://api.yescoin.gold/build/getAccountBuildInfo",proxy = self.proxy)
+            response = await self.session.get("https://api-backend.yescoin.gold/build/getAccountBuildInfo",proxy = self.proxy)
             data = (await response.json())['data']
             self.singleCoinLevel = data['singleCoinLevel']+1
             info = {
@@ -133,7 +138,7 @@ class Yescoin:
     
     async def get_account_info(self):
         try:
-            response = await self.session.get("https://api.yescoin.gold/account/getAccountInfo",proxy = self.proxy)
+            response = await self.session.get("https://api-backend.yescoin.gold/account/getAccountInfo",proxy = self.proxy)
             data = (await response.json())['data']
             logger.info(f"Thread {self.thread} | {self.name} | Balance : {data['currentAmount']} | Rank : {data['rank']}")
             
@@ -141,6 +146,6 @@ class Yescoin:
             return False
     
     async def upgrate(self, name):
-        response = await self.session.post('https://api.yescoin.gold/build/levelUp', json=name,proxy = self.proxy)
+        response = await self.session.post('https://api-backend.yescoin.gold/build/levelUp', json=name,proxy = self.proxy)
         await asyncio.sleep(random.randint(2,6))
         return ((await response.json())['code'])
