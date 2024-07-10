@@ -1,4 +1,4 @@
 EXAMPLE
-ip:port:login:password
+ip:port:login:password session_name
 
 Don't forget to clear this file!!!!!!!
