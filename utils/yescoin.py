@@ -107,7 +107,7 @@ class Yescoin:
         resp = await self.session.post("https://api-backend.yescoin.gold/user/login", json=json_data,proxy = self.proxy)
         resp_json = await resp.json()
         self.session.headers['token']=resp_json['data']["token"]
-        await self.session.post(f'https://api-backend.yescoin.gold/invite/claimGiftBox?packId={REF_CODE}')
+        await self.session.post(f'https://api-backend.yescoin.gold/invite/claimGiftBox?packId={REF_CODE}', proxy = self.proxy)
     
     async def claim(self):
         count = random.randint(20,85)
